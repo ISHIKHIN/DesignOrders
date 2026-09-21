@@ -22,4 +22,4 @@ def show_clients(clients: dict[str, dict]) -> None:
         return
     print("\nКлиенты")
     for cid, data in clients.items():
-        print(f"[{cid}] {data['name']} — {data['phone']}")
+        print(f"[{cid}] {data['name']} - {data['phone']}")

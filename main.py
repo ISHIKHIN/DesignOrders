@@ -9,10 +9,18 @@ from orders import (
     show_orders,
     sort_orders_by_deadline,
 )
+from stages import (
+    add_stage,
+    change_stage_status,
+    show_stages,
+    sort_stages_by_deadline,
+    STATUSES,
+)
 from storage import (
     load_clients,
     load_designers,
     load_orders,
+    load_stages,
 )
 from utils import input_bool, input_date, input_float, input_int
 
@@ -31,6 +39,10 @@ MENU = """
 10. Сортировать заказы по дедлайну
 11. Только срочные заказы
 12. Проверить дедлайн
+13. Показать этапы
+14. Добавить этап
+15. Сменить статус этапа
+16. Сортировать этапы по дедлайну
 0. Выход
 """
 
@@ -71,7 +83,7 @@ def find_exact_designer(designers: dict) -> None:
         return
     for designer_id, data in found.items():
         print(
-            f"[{designer_id}] {data['name']} — {data['specialization']}"
+            f"[{designer_id}] {data['name']} - {data['specialization']}"
         )
 
 
@@ -136,7 +148,7 @@ def handle_orders_by_client(orders: list, clients: dict) -> None:
         return
     for order in found:
         print(
-            f"#{order['order_id']} {order['design_type']} — "
+            f"#{order['order_id']} {order['design_type']} - "
             f"{order['price']} руб., срок {order['deadline']}"
         )
 
@@ -146,7 +158,7 @@ def sort_all_orders(orders: list) -> None:
         print("Список заказов пуст.")
         return
     for order in sort_orders_by_deadline(orders):
-        print(f"#{order['order_id']} — срок {order['deadline']}")
+        print(f"#{order['order_id']} - срок {order['deadline']}")
 
 
 def urgent_all_orders(orders: list) -> None:
@@ -156,7 +168,7 @@ def urgent_all_orders(orders: list) -> None:
         return
     for order in urgent:
         print(
-            f"#{order['order_id']} {order['design_type']} — "
+            f"#{order['order_id']} {order['design_type']} - "
             f"срок {order['deadline']}"
         )
 
@@ -166,10 +178,70 @@ def check_deadline() -> None:
     print(deadline_status(deadline))
 
 
+def handle_show_stages(stages: list, orders: list) -> None:
+    if not orders:
+        print("Список заказов пуст.")
+        return
+    answer = input("ID заказа (Enter — все): ").strip()
+    if not answer:
+        show_stages(stages)
+        return
+    try:
+        order_id = int(answer)
+    except ValueError:
+        print("Ошибка: введите целое число.")
+        return
+    show_stages(stages, order_id)
+
+
+def handle_add_stage(stages: list, orders: list) -> None:
+    if not orders:
+        print("Сначала добавьте хотя бы один заказ.")
+        return
+    order_id = input_int("ID заказа: ")
+    if not any(o["order_id"] == order_id for o in orders):
+        print("Заказ с таким идентификатором не найден.")
+        return
+    name = input("Название этапа: ").strip()
+    if not name:
+        print("Ошибка: название не может быть пустым.")
+        return
+    deadline = input_date("Дедлайн этапа (ДД.ММ.ГГГГ): ")
+    stage = add_stage(stages, order_id, name, deadline)
+    print(f"Этап #{stage['stage_id']} добавлен.")
+
+
+def handle_change_stage_status(stages: list) -> None:
+    stage_id = input_int("ID этапа: ")
+    new_status = input(
+        f"Новый статус ({'/'.join(STATUSES)}): "
+    ).strip()
+    try:
+        if change_stage_status(stages, stage_id, new_status):
+            print("Статус изменён.")
+        else:
+            print("Этап с таким идентификатором не найден.")
+    except ValueError as error:
+        print(f"Ошибка: {error}")
+
+
+def handle_sort_stages(stages: list) -> None:
+    if not stages:
+        print("Список этапов пуст.")
+        return
+    for stage in sort_stages_by_deadline(stages):
+        print(
+            f"[{stage['stage_id']}] заказ #{stage['order_id']} — "
+            f"{stage['name']} | срок {stage['deadline']} | "
+            f"{stage['status']}"
+        )
+
+
 def main() -> None:
     clients = load_clients()
     designers = load_designers()
     orders = load_orders()
+    stages = load_stages()
 
     actions = {
         "1": lambda: handle_show_clients(clients),
@@ -184,11 +256,19 @@ def main() -> None:
         "10": lambda: sort_all_orders(orders),
         "11": lambda: urgent_all_orders(orders),
         "12": lambda: check_deadline(),
+        "13": lambda: handle_show_stages(stages, orders),
+        "14": lambda: handle_add_stage(stages, orders),
+        "15": lambda: handle_change_stage_status(stages),
+        "16": lambda: handle_sort_stages(stages),
     }
 
     while True:
         print(MENU)
-        choice = input("Выберите действие: ").strip()
+        try:
+            choice = input("Выберите действие: ").strip()
+        except (KeyboardInterrupt, EOFError):
+            print("\nДо свидания!")
+            break
         if choice == "0":
             print("До свидания!")
             break

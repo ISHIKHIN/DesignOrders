@@ -1,12 +1,7 @@
-"""Вспомогательные функции проекта DesignOrders."""
 from datetime import date, datetime
 
 
 def input_int(prompt: str) -> int:
-    """Запросить у пользователя целое число.
-
-    При некорректном вводе запрос повторяется.
-    """
     while True:
         try:
             return int(input(prompt))
@@ -15,7 +10,6 @@ def input_int(prompt: str) -> int:
 
 
 def input_float(prompt: str) -> float:
-    """Запросить у пользователя число с плавающей точкой."""
     while True:
         try:
             return float(input(prompt))
@@ -24,7 +18,6 @@ def input_float(prompt: str) -> float:
 
 
 def input_date(prompt: str) -> date:
-    """Запросить дату в формате ДД.ММ.ГГГГ."""
     while True:
         try:
             return datetime.strptime(input(prompt), "%d.%m.%Y").date()
@@ -33,7 +26,6 @@ def input_date(prompt: str) -> date:
 
 
 def input_bool(prompt: str) -> bool:
-    """Запросить булево значение (да/нет)."""
     while True:
         answer = input(prompt).strip().lower()
         if answer in ("да", "д", "yes", "y"):
@@ -44,10 +36,8 @@ def input_bool(prompt: str) -> bool:
 
 
 def format_date(value: date) -> str:
-    """Преобразовать дату в строку для JSON."""
     return value.strftime("%Y-%m-%d")
 
 
 def parse_date(value: str) -> date:
-    """Преобразовать строку из JSON в объект date."""
     return datetime.strptime(value, "%Y-%m-%d").date()

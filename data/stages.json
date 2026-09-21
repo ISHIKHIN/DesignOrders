@@ -1,0 +1,23 @@
+[
+  {
+    "stage_id": 1,
+    "order_id": 1,
+    "name": "Концепт-арт",
+    "deadline": "2026-10-15",
+    "status": "done"
+  },
+  {
+    "stage_id": 2,
+    "order_id": 1,
+    "name": "Концепция",
+    "deadline": "2026-11-20",
+    "status": "in_progress"
+  },
+  {
+    "stage_id": 3,
+    "order_id": 2,
+    "name": "Макет",
+    "deadline": "2026-11-01",
+    "status": "planned"
+  }
+]

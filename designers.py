@@ -11,6 +11,7 @@ def add_designer(
     save_designers(designers)
     return new_id
 
+
 def find_designer(
     designers: dict[str, dict],
     query: str,
@@ -22,6 +23,7 @@ def find_designer(
         if query_lower in data["name"].lower()
     }
 
+
 def show_designers(
     designers: dict[str, dict],
     orders: list[dict],
@@ -29,7 +31,7 @@ def show_designers(
     if not designers:
         print("Список дизайнеров пуст.")
         return
-    print("\n--- Дизайнеры ---")
+    print("\nДизайнеры")
     for designer_id, data in designers.items():
         print(
             f"[{designer_id}] {data['name']} "
