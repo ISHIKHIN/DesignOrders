@@ -1,6 +1,7 @@
 from datetime import date
 
 from orders import deadline_status
+from storage import save_stages
 from utils import format_date, parse_date
 
 STATUSES = ("planned", "in_progress", "done")

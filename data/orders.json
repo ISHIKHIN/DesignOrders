@@ -15,15 +15,6 @@
     "design_type": "BANNER",
     "price": 5000,
     "is_urgent": false,
-    "deadline": "2026-11-01"
-  },
-  {
-    "order_id": 3,
-    "client_id": "1",
-    "designer_id": "1",
-    "design_type": "LOGO",
-    "price": 12000.0,
-    "is_urgent": true,
-    "deadline": "2026-09-21"
+    "deadline": "2026-10-01"
   }
 ]
