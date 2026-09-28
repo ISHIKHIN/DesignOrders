@@ -1,3 +1,5 @@
+from datetime import date
+
 from models import Client, Designer, Order, Stage
 from models.clients import add_client, show_clients
 from models.designers import (
@@ -9,6 +11,7 @@ from models.orders import (
     cancel_order,
     create_order,
     filter_orders_by_urgency,
+    find_order_by_id,
     find_orders_by_client,
     show_orders,
     sort_orders_by_deadline,
@@ -17,8 +20,12 @@ from models.stages import (
     STATUSES,
     add_stage,
     change_stage_status,
+    find_stage_by_id,
+    find_stages_by_order,
+    remove_stages_by_order,
     show_stages,
     sort_stages_by_deadline,
+    update_stage,
 )
 from storage import (
     load_clients,
@@ -51,6 +58,7 @@ MENU = """
 14. Добавить этап
 15. Сменить статус этапа
 16. Сортировать этапы по дедлайну
+17. Редактировать этап
 0. Выход
 """
 
@@ -141,13 +149,22 @@ def add_new_order(
     print(f"Заказ #{order.id} создан.")
 
 
-def handle_cancel_order(orders: list[Order]) -> None:
+def handle_cancel_order(
+    orders: list[Order],
+    stages: list[Stage],
+) -> None:
     order_id = input_int("Идентификатор заказа: ")
-    if cancel_order(orders, order_id):
-        save_orders(orders)
-        print("Заказ отменён.")
-    else:
+    removed_order = cancel_order(orders, order_id)
+    if removed_order is None:
         print("Заказ с таким идентификатором не найден.")
+        return
+    removed_stages = remove_stages_by_order(stages, order_id)
+    save_orders(orders)
+    save_stages(stages)
+    print(
+        f"Заказ #{order_id} отменён. "
+        f"Удалено этапов: {removed_stages}."
+    )
 
 
 def handle_orders_by_client(
@@ -192,8 +209,7 @@ def urgent_all_orders(orders: list[Order]) -> None:
 
 def check_deadline() -> None:
     deadline = input_date("Дата дедлайна (ДД.ММ.ГГГГ): ")
-    from datetime import date as date_cls
-    diff = (deadline - date_cls.today()).days
+    diff = (deadline - date.today()).days
     if diff < 0:
         print("Дедлайн просрочен :(")
     elif diff <= 7:
@@ -209,16 +225,8 @@ def handle_show_stages(
     if not orders:
         print("Список заказов пуст.")
         return
-    answer = input("ID заказа (Enter — все): ").strip()
-    if not answer:
-        show_stages(stages)
-        return
-    try:
-        order_id = int(answer)
-    except ValueError:
-        print("Ошибка: введите целое число.")
-        return
-    order = next((o for o in orders if o.id == order_id), None)
+    order_id = input_int("ID заказа: ")
+    order = find_order_by_id(orders, order_id)
     if order is None:
         print("Заказ с таким идентификатором не найден.")
         return
@@ -233,7 +241,7 @@ def handle_add_stage(
         print("Сначала добавьте хотя бы один заказ.")
         return
     order_id = input_int("ID заказа: ")
-    order = next((o for o in orders if o.id == order_id), None)
+    order = find_order_by_id(orders, order_id)
     if order is None:
         print("Заказ с таким идентификатором не найден.")
         return
@@ -270,6 +278,83 @@ def handle_sort_stages(stages: list[Stage]) -> None:
         print(stage)
 
 
+def _ask_optional(prompt: str, current: str) -> str | None:
+    """Спросить значение. Enter — оставить текущее."""
+    raw = input(f"{prompt} [{current}]: ").strip()
+    if not raw:
+        return None
+    return raw
+
+
+def handle_edit_stage(
+    stages: list[Stage],
+    orders: list[Order],
+) -> None:
+    if not stages:
+        print("Список этапов пуст.")
+        return
+
+    stage_id = input_int("ID этапа для редактирования: ")
+    stage = find_stage_by_id(stages, stage_id)
+    if stage is None:
+        print("Этап с таким идентификатором не найден.")
+        return
+
+    print(f"Текущий этап: {stage}")
+    print("Enter — оставить поле без изменений.")
+
+    new_name = _ask_optional("Новое название", stage.name)
+
+    new_deadline: date | None = None
+    raw_deadline = input(
+        f"Новый дедлайн (ДД.ММ.ГГГГ) "
+        f"[{stage.deadline.strftime('%d.%m.%Y')}]: "
+    ).strip()
+    if raw_deadline:
+        from utils import parse_date_user
+        try:
+            new_deadline = parse_date_user(raw_deadline)
+        except ValueError:
+            print("Ошибка: неверный формат даты. Изменение отменено.")
+            return
+
+    new_status = _ask_optional(
+        f"Новый статус ({'/'.join(STATUSES)})",
+        stage.status,
+    )
+
+    new_order: Order | None = None
+    raw_order = input(
+        f"ID нового заказа [{stage.order.id}] (Enter — оставить): "
+    ).strip()
+    if raw_order:
+        try:
+            order_id = int(raw_order)
+        except ValueError:
+            print("Ошибка: ID заказа должен быть числом.")
+            return
+        candidate = find_order_by_id(orders, order_id)
+        if candidate is None:
+            print("Заказ с таким идентификатором не найден.")
+            return
+        new_order = candidate
+
+    try:
+        update_stage(
+            stage,
+            name=new_name,
+            deadline=new_deadline,
+            status=new_status,
+            order=new_order,
+        )
+    except ValueError as error:
+        print(f"Ошибка: {error}")
+        return
+
+    save_stages(stages)
+    print(f"Этап обновлён: {stage}")
+
+
 def main() -> None:
     clients = load_clients()
     designers = load_designers()
@@ -284,7 +369,7 @@ def main() -> None:
         "5": lambda: find_exact_designer(designers),
         "6": lambda: show_all_orders(orders),
         "7": lambda: add_new_order(orders, clients, designers),
-        "8": lambda: handle_cancel_order(orders),
+        "8": lambda: handle_cancel_order(orders, stages),
         "9": lambda: handle_orders_by_client(orders, clients),
         "10": lambda: sort_all_orders(orders),
         "11": lambda: urgent_all_orders(orders),
@@ -293,6 +378,7 @@ def main() -> None:
         "14": lambda: handle_add_stage(stages, orders),
         "15": lambda: handle_change_stage_status(stages),
         "16": lambda: handle_sort_stages(stages),
+        "17": lambda: handle_edit_stage(stages, orders),
     }
 
     while True:

@@ -3,6 +3,8 @@ import os
 from typing import Any
 
 from models import Client, Designer, Order, Stage
+from models.orders import remember_order_id
+from models.stages import remember_stage_id
 
 DATA_DIR = "data"
 CLIENTS_FILE = os.path.join(DATA_DIR, "clients.json")
@@ -75,10 +77,22 @@ def load_orders(
 ) -> list[Order]:
     raw = load_json(ORDERS_FILE, [])
     orders: list[Order] = []
+    skipped: list[dict] = []
     for data in raw:
         order = Order.from_data(data, clients, designers)
-        if order is not None:
-            orders.append(order)
+        if order is None:
+            skipped.append(data)
+            continue
+        orders.append(order)
+        # Запоминаем использованный id, чтобы новый заказ
+        # не получил такой же id после отмены старого.
+        remember_order_id(order.id)
+
+    if skipped:
+        print(
+            f"Предупреждение: пропущено {len(skipped)} заказ(ов), "
+            f"у которых не найден клиент или дизайнер."
+        )
     return orders
 
 
@@ -90,10 +104,22 @@ def save_orders(orders: list[Order]) -> None:
 def load_stages(orders: list[Order]) -> list[Stage]:
     raw = load_json(STAGES_FILE, [])
     stages: list[Stage] = []
+    skipped: list[dict] = []
     for data in raw:
         stage = Stage.from_data(data, orders)
-        if stage is not None:
-            stages.append(stage)
+        if stage is None:
+            skipped.append(data)
+            continue
+        stages.append(stage)
+        # Запоминаем id, чтобы новый этап не совпал с существующим.
+        remember_stage_id(stage.id)
+
+    if skipped:
+        print(
+            f"Предупреждение: пропущено {len(skipped)} этап(ов), "
+            f"у которых не найден заказ. "
+            f"Проверьте data/stages.json."
+        )
     return stages
 
 

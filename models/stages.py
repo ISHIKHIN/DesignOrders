@@ -5,6 +5,9 @@ from utils import format_date, parse_date
 
 STATUSES = ("planned", "in_progress", "done")
 
+# Глобальный счётчик, чтобы id этапов не переиспользовались.
+_next_stage_id = [0]
+
 
 class Stage:
     """Этап выполнения заказа."""
@@ -75,13 +78,26 @@ class Stage:
         )
 
 
+def next_stage_id(stages: list[Stage]) -> int:
+    """Выдать следующий id этапа без переиспользования."""
+    max_active = max((stage.id for stage in stages), default=0)
+    return max(max_active, _next_stage_id[0]) + 1
+
+
+def remember_stage_id(stage_id: int) -> None:
+    """Запомнить использованный id этапа."""
+    if stage_id > _next_stage_id[0]:
+        _next_stage_id[0] = stage_id
+
+
 def add_stage(
     stages: list[Stage],
     order: Order,
     name: str,
     deadline: date,
 ) -> Stage:
-    new_id = max((stage.id for stage in stages), default=0) + 1
+    new_id = next_stage_id(stages)
+    remember_stage_id(new_id)
     stage = Stage(
         stage_id=new_id,
         order=order,
@@ -92,11 +108,58 @@ def add_stage(
     return stage
 
 
+def find_stage_by_id(
+    stages: list[Stage],
+    stage_id: int,
+) -> Stage | None:
+    """Найти этап по id или вернуть None."""
+    return next((stage for stage in stages if stage.id == stage_id), None)
+
+
 def find_stages_by_order(
     stages: list[Stage],
     order: Order,
 ) -> list[Stage]:
-    return [stage for stage in stages if stage.order is order]
+    return [stage for stage in stages if stage.order.id == order.id]
+
+
+def remove_stages_by_order(
+    stages: list[Stage],
+    order_id: int,
+) -> int:
+    """Удалить все этапы указанного заказа.
+
+    Возвращает количество удалённых этапов.
+    """
+    before = len(stages)
+    stages[:] = [stage for stage in stages if stage.order.id != order_id]
+    return before - len(stages)
+
+
+def update_stage(
+    stage: Stage,
+    *,
+    name: str | None = None,
+    deadline: date | None = None,
+    status: str | None = None,
+    order: Order | None = None,
+) -> Stage:
+    """Обновить поля этапа.
+
+    Передавайте только те параметры, которые нужно изменить.
+    Если параметр равен None — поле остаётся прежним.
+    """
+    if name is not None:
+        if not name.strip():
+            raise ValueError("Название этапа не может быть пустым.")
+        stage.name = name.strip()
+    if deadline is not None:
+        stage.deadline = deadline
+    if status is not None:
+        stage.change_status(status)
+    if order is not None:
+        stage.order = order
+    return stage
 
 
 def change_stage_status(

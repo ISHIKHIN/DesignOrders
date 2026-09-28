@@ -11,13 +11,13 @@
     "order_id": 1,
     "name": "Концепция",
     "deadline": "2026-11-20",
-    "status": "in_progress"
+    "status": "planned"
   },
   {
     "stage_id": 3,
     "order_id": 2,
-    "name": "Макет",
-    "deadline": "2026-11-01",
+    "name": "Разработка концепта",
+    "deadline": "2026-12-12",
     "status": "planned"
   }
 ]

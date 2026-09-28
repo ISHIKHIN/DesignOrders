@@ -13,8 +13,8 @@
     "client_id": "1",
     "designer_id": "1",
     "design_type": "BANNER",
-    "price": 5000,
-    "is_urgent": false,
-    "deadline": "2026-10-01"
+    "price": 12000.0,
+    "is_urgent": true,
+    "deadline": "2026-12-12"
   }
 ]

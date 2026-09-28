@@ -20,7 +20,7 @@ def input_float(prompt: str) -> float:
 def input_date(prompt: str) -> date:
     while True:
         try:
-            return datetime.strptime(input(prompt), "%d.%m.%Y").date()
+            return parse_date_user(input(prompt))
         except ValueError:
             print("Ошибка: неверный формат даты. Пример: 31.12.2026")
 
@@ -41,3 +41,7 @@ def format_date(value: date) -> str:
 
 def parse_date(value: str) -> date:
     return datetime.strptime(value, "%Y-%m-%d").date()
+
+
+def parse_date_user(value: str) -> date:
+    return datetime.strptime(value, "%d.%m.%Y").date()

@@ -80,6 +80,26 @@ class Order:
         return self.get_status()
 
 
+def next_order_id(orders: list[Order]) -> int:
+    """Выдать следующий id, который ещё не использовался.
+
+    Учитывает максимальный id среди активных заказов и
+    глобальный счётчик, чтобы id не переиспользовались после отмены.
+    """
+    max_active = max((order.id for order in orders), default=0)
+    return max(max_active, _next_order_id[0]) + 1
+
+
+# Глобальный счётчик, чтобы id не переиспользовались после удаления.
+_next_order_id = [0]
+
+
+def remember_order_id(order_id: int) -> None:
+    """Запомнить использованный id, чтобы он не выдавался повторно."""
+    if order_id > _next_order_id[0]:
+        _next_order_id[0] = order_id
+
+
 def create_order(
     orders: list[Order],
     client: Client,
@@ -89,7 +109,8 @@ def create_order(
     is_urgent: bool,
     deadline: date,
 ) -> Order:
-    new_id = max((order.id for order in orders), default=0) + 1
+    new_id = next_order_id(orders)
+    remember_order_id(new_id)
     order = Order(
         order_id=new_id,
         client=client,
@@ -103,19 +124,28 @@ def create_order(
     return order
 
 
-def cancel_order(orders: list[Order], order_id: int) -> bool:
+def find_order_by_id(orders: list[Order], order_id: int) -> Order | None:
+    """Найти заказ по id или вернуть None."""
+    return next((order for order in orders if order.id == order_id), None)
+
+
+def cancel_order(orders: list[Order], order_id: int) -> Order | None:
+    """Удалить заказ по id. Вернуть удалённый заказ или None.
+
+    Возврат объекта нужен, чтобы вызывающий код мог удалить
+    связанные этапы.
+    """
     for index, order in enumerate(orders):
         if order.id == order_id:
-            orders.pop(index)
-            return True
-    return False
+            return orders.pop(index)
+    return None
 
 
 def find_orders_by_client(
     orders: list[Order],
     client: Client,
 ) -> list[Order]:
-    return [order for order in orders if order.client is client]
+    return [order for order in orders if order.client.id == client.id]
 
 
 def sort_orders_by_deadline(orders: list[Order]) -> list[Order]:
