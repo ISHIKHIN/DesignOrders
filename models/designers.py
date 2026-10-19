@@ -1,5 +1,4 @@
 class Designer:
-    """Дизайнер."""
 
     def __init__(
         self,

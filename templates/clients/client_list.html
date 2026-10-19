@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Клиенты{% endblock %}
+{% block content %}
+    <h1>Клиенты</h1>
+    <ul class="list-group mt-3">
+        {% for client in clients %}
+            <li class="list-group-item">
+                <a href="{% url 'clients:detail' client.id %}">{{ client.name }}</a> — {{ client.phone }}
+            </li>
+        {% empty %}
+            <li class="list-group-item">Список клиентов пуст.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

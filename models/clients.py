@@ -1,5 +1,4 @@
 class Client:
-    """Клиент дизайн-студии."""
 
     def __init__(self, client_id: str, name: str, phone: str) -> None:
         self.id = client_id

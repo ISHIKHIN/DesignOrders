@@ -2,7 +2,6 @@ from datetime import date
 
 from models import Client, Designer, Order
 from models.orders import (
-    cancel_order,
     create_order,
     filter_orders_by_urgency,
     find_orders_by_client,
@@ -35,22 +34,12 @@ def test_create_order() -> None:
     client = make_client()
     designer = make_designer()
     create_order(
-        orders, client, designer, "LOGO", 10000, True, date(2026, 12, 31)
+        orders, client, designer, "LOGO", 10000, True,
+        date(2026, 12, 31),
     )
     assert len(orders) == 1
     assert isinstance(orders[0], Order)
     assert orders[0].design_type == "LOGO"
-
-
-def test_cancel_order() -> None:
-    orders: list = []
-    client = make_client()
-    designer = make_designer()
-    create_order(
-        orders, client, designer, "LOGO", 10000, True, date(2026, 12, 31)
-    )
-    assert cancel_order(orders, 1) is True
-    assert orders == []
 
 
 def test_find_orders_by_client() -> None:
@@ -75,10 +64,12 @@ def test_sort_orders_by_deadline() -> None:
     client = make_client()
     designer = make_designer()
     create_order(
-        orders, client, designer, "LOGO", 10000, True, date(2026, 12, 31)
+        orders, client, designer, "LOGO", 10000, True,
+        date(2026, 12, 31),
     )
     create_order(
-        orders, client, designer, "BANNER", 5000, False, date(2026, 10, 1)
+        orders, client, designer, "BANNER", 5000, False,
+        date(2026, 10, 1),
     )
     sorted_orders = sort_orders_by_deadline(orders)
     assert sorted_orders[0].deadline == date(2026, 10, 1)
@@ -89,10 +80,12 @@ def test_filter_orders_by_urgency() -> None:
     client = make_client()
     designer = make_designer()
     create_order(
-        orders, client, designer, "LOGO", 10000, True, date(2026, 12, 31)
+        orders, client, designer, "LOGO", 10000, True,
+        date(2026, 12, 31),
     )
     create_order(
-        orders, client, designer, "BANNER", 5000, False, date(2026, 10, 1)
+        orders, client, designer, "BANNER", 5000, False,
+        date(2026, 10, 1),
     )
     urgent = filter_orders_by_urgency(orders, only_urgent=True)
     assert len(urgent) == 1

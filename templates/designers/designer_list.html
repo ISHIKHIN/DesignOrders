@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Дизайнеры{% endblock %}
+{% block content %}
+    <h1>Дизайнеры</h1>
+    <ul class="list-group mt-3">
+        {% for designer in designers %}
+            <li class="list-group-item">
+                <a href="{% url 'designers:detail' designer.id %}">{{ designer.name }}</a> ({{ designer.specialization }})
+            </li>
+        {% empty %}
+            <li class="list-group-item">Список дизайнеров пуст.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

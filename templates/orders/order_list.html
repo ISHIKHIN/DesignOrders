@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Заказы{% endblock %}
+{% block content %}
+    <h1>Заказы</h1>
+    <ul class="list-group mt-3">
+        {% for order in orders %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{% url 'orders:detail' order.id %}">
+                    #{{ order.id }} {{ order.design_type }}
+                </a>
+                <span>
+                    {{ order.deadline }} |
+                    {% if order.is_urgent %}
+                        <span class="badge bg-danger">Срочно</span>
+                    {% else %}
+                        <span class="badge bg-success">Не срочно</span>
+                    {% endif %}
+                </span>
+            </li>
+        {% empty %}
+            <li class="list-group-item">Список заказов пуст.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

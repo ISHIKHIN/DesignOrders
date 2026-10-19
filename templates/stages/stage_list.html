@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Этапы{% endblock %}
+{% block content %}
+    <h1>Этапы {% if order %}для заказа #{{ order.id }}{% endif %}</h1>
+    <ul class="list-group mt-3">
+        {% for stage in stages %}
+            <li class="list-group-item">
+                [{{ stage.id }}] Заказ #{{ stage.order.id }} — {{ stage.name }} |
+                Срок: {{ stage.deadline }} |
+                Статус: <span class="badge bg-info text-dark">{{ stage.status }}</span> |
+                {{ stage.deadline_status }}
+            </li>
+        {% empty %}
+            <li class="list-group-item">Список этапов пуст.</li>
+        {% endfor %}
+    </ul>
+    {% if not order %}
+        <a href="{% url 'orders:list' %}" class="btn btn-secondary mt-3">← К заказам</a>
+    {% else %}
+        <a href="{% url 'orders:detail' order.id %}" class="btn btn-secondary mt-3">← К заказу</a>
+    {% endif %}
+{% endblock %}
