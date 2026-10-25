@@ -2,6 +2,7 @@
 {% block title %}Клиенты{% endblock %}
 {% block content %}
     <h1>Клиенты</h1>
+    <p>Всего клиентов: {{ clients|length }}</p>
     <ul class="list-group mt-3">
         {% for client in clients %}
             <li class="list-group-item">

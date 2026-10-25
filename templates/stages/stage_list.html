@@ -5,9 +5,20 @@
     <ul class="list-group mt-3">
         {% for stage in stages %}
             <li class="list-group-item">
-                [{{ stage.id }}] Заказ #{{ stage.order.id }} — {{ stage.name }} |
+                [{{ stage.id }}]
+                <a href="{% url 'stages:detail' stage.id %}">
+                    {{ stage.name }}
+                </a>
+                — заказ
+                <a href="{% url 'orders:detail' stage.order.id %}">
+                    #{{ stage.order.id }}
+                </a>
+                |
                 Срок: {{ stage.deadline }} |
-                Статус: <span class="badge bg-info text-dark">{{ stage.status }}</span> |
+                Статус:
+                <span class="badge bg-info text-dark">
+                    {{ stage.status }}
+                </span> |
                 {{ stage.deadline_status }}
             </li>
         {% empty %}
@@ -15,8 +26,10 @@
         {% endfor %}
     </ul>
     {% if not order %}
-        <a href="{% url 'orders:list' %}" class="btn btn-secondary mt-3">← К заказам</a>
+        <a href="{% url 'orders:list' %}"
+           class="btn btn-secondary mt-3">← К заказам</a>
     {% else %}
-        <a href="{% url 'orders:detail' order.id %}" class="btn btn-secondary mt-3">← К заказу</a>
+        <a href="{% url 'orders:detail' order.id %}"
+           class="btn btn-secondary mt-3">← К заказу</a>
     {% endif %}
 {% endblock %}

@@ -1,0 +1,15 @@
+body {
+    background-color: #f8f9fa;
+}
+.card {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.list-group-item {
+    border-radius: 8px;
+    margin-bottom: 4px;
+}
+footer {
+    color: #6c757d;
+    font-size: 0.9rem;
+}

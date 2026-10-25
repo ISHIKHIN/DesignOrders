@@ -22,6 +22,7 @@ def order_detail(request, order_id):
     orders = load_orders(clients, designers)
     order = find_order_by_id(orders, order_id)
     if order is None:
+        request.not_found_message = f'Заказ №{order_id} не найден'
         raise Http404("Заказ не найден")
     return render(
         request,
