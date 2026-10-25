@@ -1,13 +1,24 @@
+{% load static %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="{% url 'homepage:index' %}">DesignOrders</a>
-        <div class="navbar-nav">
-            <a class="nav-link" href="{% url 'clients:list' %}">Клиенты</a>
-            <a class="nav-link" href="{% url 'designers:list' %}">Дизайнеры</a>
-            <a class="nav-link" href="{% url 'orders:list' %}">Заказы</a>
-            <a class="nav-link" href="{% url 'stages:list' %}">Этапы</a>
-            <a class="nav-link" href="{% url 'orders:search' %}">Поиск</a>
-            <a class="nav-link" href="{% url 'orders:statistics' %}">Статистика</a>
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'homepage:index' %}">
+            <img src="{% static 'img/logo.jpg' %}" alt="Logo" width="35" height="35" class="me-2 rounded-circle bg-white p-1">
+            <span>DesignOrders</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{% url 'clients:list' %}">Клиенты</a>
+                <a class="nav-link" href="{% url 'designers:list' %}">Дизайнеры</a>
+                <a class="nav-link" href="{% url 'orders:list' %}">Заказы</a>
+                <a class="nav-link" href="{% url 'orders:search' %}">Поиск</a>
+                <a class="nav-link" href="{% url 'orders:statistics' %}">Статистика</a>
+                <a class="nav-link" href="{% url 'stages:list' %}">Этапы</a>
+            </div>
         </div>
     </div>
 </nav>
