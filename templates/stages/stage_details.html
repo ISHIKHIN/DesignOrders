@@ -2,24 +2,29 @@
 {% block title %}Этап #{{ stage.id }}{% endblock %}
 {% block content %}
     <div class="card">
-        <div class="card-header">
-            <h2>Этап #{{ stage.id }} — {{ stage.name }}</h2>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">Этап #{{ stage.id }} — {{ stage.name }}</h2>
+            <div>
+                {% if stage.status == 'planned' %}
+                    <span class="badge bg-primary text-white fs-6">Запланирован</span>
+                {% elif stage.status == 'in_progress' %}
+                    <span class="badge bg-warning text-dark fs-6">В работе</span>
+                {% elif stage.status == 'done' %}
+                    <span class="badge bg-success text-white fs-6">Выполнен</span>
+                {% else %}
+                    <span class="badge bg-info text-dark fs-6">{{ stage.status }}</span>
+                {% endif %}
+            </div>
         </div>
         <div class="card-body">
             <p><strong>Заказ:</strong>
-                <a href="{% url 'orders:detail' stage.order.id %}">
-                    #{{ stage.order.id }} {{ stage.order.design_type }}
+                <a href="{% url 'orders:detail' stage.order_id %}">
+                    #{{ stage.order_id }} {{ stage.design_type }}
                 </a>
             </p>
-            <p><strong>Срок:</strong> {{ stage.deadline }}
-                ({{ stage.deadline_status }})</p>
-            <p><strong>Статус:</strong>
-                <span class="badge bg-info text-dark">
-                    {{ stage.status }}
-                </span>
-            </p>
-            <a href="{% url 'stages:list' %}"
-               class="btn btn-secondary">← К этапам</a>
+            <p><strong>Срок:</strong> {{ stage.deadline }}</p>
+
+            <a href="{% url 'stages:list' %}" class="btn btn-secondary mt-3">← К этапам</a>
         </div>
     </div>
 {% endblock %}

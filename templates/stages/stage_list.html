@@ -4,32 +4,38 @@
     <h1>Этапы {% if order %}для заказа #{{ order.id }}{% endif %}</h1>
     <ul class="list-group mt-3">
         {% for stage in stages %}
-            <li class="list-group-item">
-                [{{ stage.id }}]
-                <a href="{% url 'stages:detail' stage.id %}">
-                    {{ stage.name }}
-                </a>
-                — заказ
-                <a href="{% url 'orders:detail' stage.order.id %}">
-                    #{{ stage.order.id }}
-                </a>
-                |
-                Срок: {{ stage.deadline }} |
-                Статус:
-                <span class="badge bg-info text-dark">
-                    {{ stage.status }}
-                </span> |
-                {{ stage.deadline_status }}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    [{{ stage.id }}]
+                    <a href="{% url 'stages:detail' stage.id %}">
+                        {{ stage.name }}
+                    </a>
+                    — заказ
+                    <a href="{% url 'orders:detail' stage.order_id %}">
+                        #{{ stage.order_id }}
+                    </a>
+                    | Срок: {{ stage.deadline }}
+                </div>
+                <div>
+                    {% if stage.status == 'planned' %}
+                        <span class="badge bg-primary text-white">Запланирован</span>
+                    {% elif stage.status == 'in_progress' %}
+                        <span class="badge bg-warning text-dark">В работе</span>
+                    {% elif stage.status == 'done' %}
+                        <span class="badge bg-success text-white">Выполнен</span>
+                    {% else %}
+                        <span class="badge bg-info text-dark">{{ stage.status }}</span>
+                    {% endif %}
+                </div>
             </li>
         {% empty %}
             <li class="list-group-item">Список этапов пуст.</li>
         {% endfor %}
     </ul>
+
     {% if not order %}
-        <a href="{% url 'orders:list' %}"
-           class="btn btn-secondary mt-3">← К заказам</a>
+        <a href="{% url 'orders:list' %}" class="btn btn-secondary mt-3">← К заказам</a>
     {% else %}
-        <a href="{% url 'orders:detail' order.id %}"
-           class="btn btn-secondary mt-3">← К заказу</a>
+        <a href="{% url 'orders:detail' order.id %}" class="btn btn-secondary mt-3">← К заказу</a>
     {% endif %}
 {% endblock %}

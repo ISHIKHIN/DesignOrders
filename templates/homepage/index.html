@@ -1,14 +1,22 @@
 {% extends 'base.html' %}
 {% block title %}Главная - DesignOrders{% endblock %}
 {% block content %}
-    <div class="p-5 mb-4 bg-light rounded-3">
-        <div class="container-fluid py-5">
-            <h1 class="display-5 fw-bold">DesignOrders</h1>
-            <p class="col-md-8 fs-4">Система учёта заказов на дизайн.</p>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                <a href="{% url 'orders:list' %}" class="btn btn-primary btn-lg px-4 me-md-2">Заказы</a>
-                <a href="{% url 'clients:list' %}" class="btn btn-outline-secondary btn-lg px-4">Клиенты</a>
+    <div class="p-5 mb-4 bg-white rounded-4 shadow-sm border">
+        <div class="container-fluid py-4">
+            <h1 class="display-5 fw-bold text-dark mb-3">DesignOrders</h1>
+            <p class="col-md-8 fs-5 text-muted mb-4">
+                Система учёта заказов на дизайн. Управление клиентами, дизайнерами и отслеживание этапов работ.
+            </p>
+            <div class="d-grid gap-3 d-md-flex justify-content-md-start">
+                <a href="{% url 'orders:list' %}" class="btn btn-primary btn-lg px-4 shadow-sm">
+                    Перейти к заказам
+                </a>
+                <a href="{% url 'clients:list' %}" class="btn btn-outline-secondary btn-lg px-4">
+                    Список клиентов
+                </a>
             </div>
         </div>
     </div>
+
+
 {% endblock %}

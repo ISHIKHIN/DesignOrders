@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Статистика{% endblock %}
+{% block content %}
+    <h1>Статистика заказов</h1>
+    <p>Всего заказов: <strong>{{ total_count }}</strong></p>
+    <p>Срочных заказов: <strong>{{ urgent_count }}</strong></p>
+    <h2 class="mt-4">По дизайнерам</h2>
+    <table class="table table-striped">
+        <thead><tr><th>Дизайнер</th><th>Заказов</th><th>Сумма, руб.</th></tr></thead>
+        <tbody>
+            {% for row in by_designer %}
+                <tr>
+                    <td>{{ row.designer_name }}</td>
+                    <td>{{ row.orders_count }}</td>
+                    <td>{{ row.total_price|default:"0" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
