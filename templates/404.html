@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 {% block title %}404 — {{ message }}{% endblock %}
 {% block content %}
-    <h1 class="text-danger">404 — {{ message }}</h1>
-    <p>Проверьте адрес или вернитесь на главную.</p>
-    <a href="{% url 'homepage:index' %}" class="btn btn-primary">На главную</a>
+    <div class="text-center mt-5">
+        <h1 class="text-danger display-4 fw-bold">404</h1>
+        <h2 class="mb-4">{{ message }}</h2>
+        <p class="text-muted">Проверьте адрес или вернитесь на главную страницу.</p>
+        <a href="{% url 'homepage:index' %}" class="btn btn-primary btn-lg mt-3">
+            На главную
+        </a>
+    </div>
 {% endblock %}

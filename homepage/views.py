@@ -6,7 +6,11 @@ def index(request):
 
 
 def page_not_found(request, exception):
-    message = getattr(request, 'not_found_message', 'Страница не найдена')
+    if hasattr(request, 'not_found_message'):
+        message = request.not_found_message
+    else:
+        message = "Страница не найдена"
+
     return render(
         request,
         '404.html',

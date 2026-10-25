@@ -11,15 +11,23 @@ main {
     background-color: #212529 !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
+
 .navbar-brand {
     font-weight: 700;
     letter-spacing: 0.5px;
+    color: #ffffff !important;
 }
+
 .nav-link {
-    transition: color 0.3s ease;
+    color: rgba(255, 255, 255, 0.8) !important;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    border-radius: 6px;
+    padding: 6px 12px !important;
 }
+
 .nav-link:hover {
-    color: #ffc107 !important;
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .card {
@@ -28,6 +36,7 @@ main {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     overflow: hidden;
 }
+
 .card-header {
     background-color: #ffffff;
     border-bottom: 2px solid #f1f1f1;
@@ -42,6 +51,7 @@ main {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .list-group-item:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
@@ -52,6 +62,7 @@ main {
     font-weight: 500;
     color: #0d6efd;
 }
+
 .list-group-item a:hover {
     color: #0a58ca;
     text-decoration: underline;
@@ -65,6 +76,4 @@ main {
 footer {
     color: #6c757d;
     font-size: 0.9rem;
-    border-top: 1px solid #dee2e6;
-    padding-top: 15px;
 }
