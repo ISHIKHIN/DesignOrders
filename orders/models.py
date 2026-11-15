@@ -7,6 +7,11 @@ from designers.models import Designer
 
 
 class Order(models.Model):
+    class Status(models.TextChoices):
+        NEW = 'new', 'Новый'
+        IN_PROGRESS = 'in_progress', 'В работе'
+        DONE = 'done', 'Выполнен'
+        CANCELLED = 'cancelled', 'Отменён'
 
     client = models.ForeignKey(
         Client,
@@ -20,26 +25,25 @@ class Order(models.Model):
         related_name='orders',
         verbose_name='Дизайнер',
     )
-    design_type = models.CharField(
-        max_length=64,
-        verbose_name='Тип дизайна',
-    )
+    design_type = models.CharField(max_length=64, verbose_name='Тип дизайна')
     price = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        verbose_name='Стоимость, руб.',
+        max_digits=12, decimal_places=2, verbose_name='Стоимость, руб.',
     )
-    is_urgent = models.BooleanField(
-        default=False,
-        verbose_name='Срочный заказ',
+    is_urgent = models.BooleanField(default=False, verbose_name='Срочный заказ')
+    deadline = models.DateField(verbose_name='Дедлайн')
+    status = models.CharField(
+        max_length=16,
+        choices=Status.choices,
+        default=Status.NEW,
+        verbose_name='Статус',
     )
-    deadline = models.DateField(
-        verbose_name='Дедлайн',
+    is_expensive = models.GeneratedField(
+        expression=models.Q(price__gte=10000),
+        output_field=models.BooleanField(),
+        db_persist=True,
+        verbose_name='Дорогой заказ',
     )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Создан',
-    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создан')
 
     class Meta:
         verbose_name = 'Заказ'
@@ -62,7 +66,7 @@ class Order(models.Model):
             today = date.today()
         diff = (self.deadline - today).days
         if diff < 0:
-            return 'Дедлайн просрочен :('
+            return 'Дедлайн просрочен'
         if diff <= 7:
-            return 'Дедлайн скоро!'
-        return 'Дедлайн нескоро :)'
+            return 'Дедлайн скоро'
+        return 'Дедлайн нескоро'

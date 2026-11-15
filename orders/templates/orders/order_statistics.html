@@ -5,18 +5,34 @@
 <h1 class="mb-4">Статистика</h1>
 
 <div class="row g-3 mb-4">
-    <div class="col-md-6">
+    <div class="col-6 col-md-3">
         <div class="stat-card">
-            <div class="label">Всего заказов</div>
-            <div class="value">{{ total_count }}</div>
+            <div class="label">Новые</div>
+            <div class="value">{{ by_status.new|default:0 }}</div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-6 col-md-3">
         <div class="stat-card">
-            <div class="label">Срочных</div>
-            <div class="value">{{ urgent_count }}</div>
+            <div class="label">В работе</div>
+            <div class="value">{{ by_status.in_progress|default:0 }}</div>
         </div>
     </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="label">Выполнены</div>
+            <div class="value">{{ by_status.done|default:0 }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="label">Отменены</div>
+            <div class="value">{{ by_status.cancelled|default:0 }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-info">
+    Всего заказов: {{ by_status.total|default:0 }}
 </div>
 
 <div class="card">

@@ -23,7 +23,7 @@
             <div class="d-flex align-items-center gap-3">
                 <span class="avatar">{{ client.name|first|upper }}</span>
                 <div>
-                    <a href="{% url 'clients:detail' client.id %}">{{ client.name }}</a>
+                    <a href="{{ client.get_absolute_url }}">{{ client.name }}</a>
                     <div class="text-muted small">{{ client.phone|default:"— телефон не указан" }}</div>
                 </div>
             </div>

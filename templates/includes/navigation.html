@@ -3,7 +3,7 @@
     <div class="container">
         <a class="navbar-brand" href="{% url 'homepage:index' %}">
             <img src="{% static 'img/logo.jpg' %}" alt="Logo">
-            <span>DesignOrders</span>
+            <span>{{ site_name|default:"DesignOrders" }}</span>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -15,6 +15,7 @@
                 <a class="nav-link" href="{% url 'clients:list' %}">Клиенты</a>
                 <a class="nav-link" href="{% url 'designers:list' %}">Дизайнеры</a>
                 <a class="nav-link" href="{% url 'orders:list' %}">Заказы</a>
+                <a class="nav-link" href="{% url 'orders:free_designers' %}">Свободные дизайнеры</a>
                 <a class="nav-link" href="{% url 'orders:statistics' %}">Статистика</a>
                 <a class="nav-link" href="{% url 'stages:list' %}">Этапы</a>
             </div>

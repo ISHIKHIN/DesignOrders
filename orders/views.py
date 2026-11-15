@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, render
 
 from clients.models import Client
 from designers.models import Designer
+from stages.models import Stage
 
 from .models import Order
 
@@ -30,7 +31,6 @@ def _parse_date(value: str):
 
 
 def _parse_price(value: str):
-    """Парсит цену: '10000', '10000.50', '10000,50' → float."""
     if not value:
         return None
     try:
@@ -64,6 +64,10 @@ def order_list(request):
     elif urgent == '0':
         orders = orders.filter(is_urgent=False)
 
+    status = request.GET.get('status', '').strip()
+    if status in dict(Order.Status.choices):
+        orders = orders.filter(status=status)
+
     min_price = _parse_price(request.GET.get('min_price', ''))
     if min_price is not None:
         orders = orders.filter(price__gte=min_price)
@@ -79,10 +83,6 @@ def order_list(request):
     date_to = _parse_date(request.GET.get('date_to', ''))
     if date_to:
         orders = orders.filter(deadline__lte=date_to)
-
-    hide_done = request.GET.get('hide_done', '').strip()
-    if hide_done == '1':
-        orders = orders.exclude(stages__status='done')
 
     sort = request.GET.get('sort', 'deadline')
     sort_config = SORT_FIELDS.get(sort, SORT_FIELDS['deadline'])
@@ -113,6 +113,7 @@ def order_list(request):
         'stats': stats,
         'clients': Client.objects.all(),
         'designers': Designer.objects.all(),
+        'statuses': Order.Status.choices,
         'sort_fields': SORT_FIELDS.items(),
         'current_sort': sort,
         'query': query,
@@ -132,6 +133,26 @@ def order_detail(request, order_id):
     })
 
 
+def free_designers(request):
+    target = _parse_date(request.GET.get('date', ''))
+    if target is None:
+        target = datetime.today().date()
+
+    busy = (
+        Order.objects
+        .filter(deadline=target)
+        .exclude(status=Order.Status.CANCELLED)
+        .values_list('designer_id', flat=True)
+    )
+    designers = Designer.objects.exclude(id__in=busy).order_by('name')
+
+    return render(request, 'orders/free_designers.html', {
+        'designers': designers,
+        'target_date': target,
+        'raw_date': request.GET.get('date', ''),
+    })
+
+
 def order_statistics(request):
     by_designer = (
         Designer.objects
@@ -142,11 +163,15 @@ def order_statistics(request):
         .order_by('-total_price')
     )
 
-    total_count = Order.objects.count()
-    urgent_count = Order.objects.filter(is_urgent=True).count()
+    by_status = Order.objects.aggregate(
+        new=Count('id', filter=Q(status=Order.Status.NEW)),
+        in_progress=Count('id', filter=Q(status=Order.Status.IN_PROGRESS)),
+        done=Count('id', filter=Q(status=Order.Status.DONE)),
+        cancelled=Count('id', filter=Q(status=Order.Status.CANCELLED)),
+        total=Count('id'),
+    )
 
     return render(request, 'orders/order_statistics.html', {
         'by_designer': by_designer,
-        'total_count': total_count,
-        'urgent_count': urgent_count,
+        'by_status': by_status,
     })

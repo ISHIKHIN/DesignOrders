@@ -18,19 +18,19 @@
 
 <div class="row g-3 mb-4">
     <div class="col-md-4">
-        <div class="stat-card accent-purple">
+        <div class="stat-card">
             <div class="label">Заказов</div>
             <div class="value">{{ stats.count|default:0 }}</div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="stat-card accent-success">
+        <div class="stat-card">
             <div class="label">Сумма</div>
             <div class="value">{{ stats.total|default:0 }} ₽</div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="stat-card accent-info">
+        <div class="stat-card">
             <div class="label">Средняя</div>
             <div class="value">{{ stats.avg|default:0|floatformat:2 }} ₽</div>
         </div>

@@ -14,13 +14,11 @@
 <form method="get" class="card mb-4">
     <div class="card-body">
         <div class="row g-2 align-items-end">
-
-            <div class="col-12 col-lg-4">
+            <div class="col-12 col-lg-3">
                 <label class="form-label small text-muted">Поиск</label>
                 <input type="text" name="q" value="{{ query }}" class="form-control"
                        placeholder="тип / клиент / дизайнер">
             </div>
-
             <div class="col-6 col-lg-2">
                 <label class="form-label small text-muted">Клиент</label>
                 <select name="client" class="form-select">
@@ -33,7 +31,6 @@
                     {% endfor %}
                 </select>
             </div>
-
             <div class="col-6 col-lg-2">
                 <label class="form-label small text-muted">Дизайнер</label>
                 <select name="designer" class="form-select">
@@ -46,7 +43,6 @@
                     {% endfor %}
                 </select>
             </div>
-
             <div class="col-6 col-lg-2">
                 <label class="form-label small text-muted">Срочность</label>
                 <select name="urgent" class="form-select">
@@ -55,23 +51,30 @@
                     <option value="0" {% if request.GET.urgent == '0' %}selected{% endif %}>Только обычные</option>
                 </select>
             </div>
-
+            <div class="col-6 col-lg-2">
+                <label class="form-label small text-muted">Статус</label>
+                <select name="status" class="form-select">
+                    <option value="">Все</option>
+                    {% for value, label in statuses %}
+                        <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
             <div class="col-3 col-lg-1">
                 <label class="form-label small text-muted">Цена от</label>
                 <input type="number" step="0.01" name="min_price"
                        value="{{ request.GET.min_price }}" class="form-control" placeholder="0">
             </div>
-
             <div class="col-3 col-lg-1">
                 <label class="form-label small text-muted">Цена до</label>
                 <input type="number" step="0.01" name="max_price"
                        value="{{ request.GET.max_price }}" class="form-control" placeholder="∞">
             </div>
-
         </div>
 
         <div class="row g-2 align-items-end mt-1">
-
             <div class="col-12 col-lg-4">
                 <label class="form-label small text-muted">Сортировка</label>
                 <select name="sort" class="form-select">
@@ -82,15 +85,12 @@
                     {% endfor %}
                 </select>
             </div>
-
             <div class="col-6 col-lg-2">
                 <button type="submit" class="btn btn-primary w-100">Применить</button>
             </div>
-
             <div class="col-6 col-lg-2">
                 <a href="{% url 'orders:list' %}" class="btn btn-secondary w-100">Сбросить</a>
             </div>
-
         </div>
     </div>
 </form>
@@ -105,6 +105,7 @@
                 {% if order.is_urgent %}
                     <span class="badge bg-danger ms-2">срочно</span>
                 {% endif %}
+                <span class="badge bg-secondary ms-2">{{ order.get_status_display }}</span>
                 <div class="text-muted small mt-1">
                     {{ order.client.name }} → {{ order.designer.name }}
                 </div>

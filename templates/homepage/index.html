@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
-{% block title %}Главная — DesignOrders{% endblock %}
+{% block title %}Главная — {{ site_name }}{% endblock %}
 {% block content %}
 
 <section class="hero-lite mb-4">
-    <h1>DesignOrders</h1>
-    <p>Система учёта заказов на дизайн</p>
+    <h1>{{ site_name }}</h1>
+    <p>Система учёта заказов на дизайн: клиенты, дизайнеры, заказы и этапы — в одном месте.</p>
     <div class="d-flex flex-wrap gap-2">
         <a href="{% url 'orders:list' %}" class="btn btn-primary btn-lite">Перейти к заказам</a>
         <a href="{% url 'clients:list' %}" class="btn btn-secondary btn-lite">Клиенты</a>
@@ -13,30 +13,45 @@
 
 <section class="row g-3 mb-5">
     <div class="col-6 col-lg-3">
-        <div class="stat-card accent-purple">
+        <div class="stat-card">
             <div class="label">Заказов</div>
             <div class="value">{{ orders_count }}</div>
         </div>
     </div>
     <div class="col-6 col-lg-3">
-        <div class="stat-card accent-danger">
+        <div class="stat-card">
             <div class="label">Срочных</div>
             <div class="value">{{ urgent_count }}</div>
         </div>
     </div>
     <div class="col-6 col-lg-3">
-        <div class="stat-card accent-success">
+        <div class="stat-card">
             <div class="label">Клиентов</div>
             <div class="value">{{ clients_count }}</div>
         </div>
     </div>
     <div class="col-6 col-lg-3">
-        <div class="stat-card accent-info">
+        <div class="stat-card">
             <div class="label">Дизайнеров</div>
             <div class="value">{{ designers_count }}</div>
         </div>
     </div>
 </section>
+
+<div class="alert alert-info mb-3">
+    <strong>Заказы по статусам:</strong>
+    Новые: {{ order_stats.new|default:0 }} |
+    В работе: {{ order_stats.in_progress|default:0 }} |
+    Выполнены: {{ order_stats.done|default:0 }} |
+    Отменены: {{ order_stats.cancelled|default:0 }}
+</div>
+
+<div class="alert alert-info mb-5">
+    <strong>Этапы по статусам:</strong>
+    Запланировано: {{ stage_stats.planned|default:0 }} |
+    В работе: {{ stage_stats.in_progress|default:0 }} |
+    Выполнено: {{ stage_stats.done|default:0 }}
+</div>
 
 <section>
     <div class="d-flex justify-content-between align-items-center mb-3">

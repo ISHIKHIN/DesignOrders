@@ -2,7 +2,6 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 
 from orders.models import Order
-
 from .models import Stage
 
 
@@ -15,7 +14,7 @@ def stage_list(request, order_id=None):
         stages = stages.filter(order=order)
 
     status = request.GET.get('status', '').strip()
-    if status in dict(Stage.STATUSES):
+    if status in dict(Stage.Status.choices):
         stages = stages.filter(status=status)
 
     query = request.GET.get('q', '').strip()
@@ -27,7 +26,7 @@ def stage_list(request, order_id=None):
     return render(request, 'stages/stage_list.html', {
         'stages': stages,
         'order': order,
-        'statuses': Stage.STATUSES,
+        'statuses': Stage.Status.choices,
         'current_status': status,
         'query': query,
     })

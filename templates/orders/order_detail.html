@@ -7,14 +7,15 @@
         <h2 class="h4 mb-0">Заказ #{{ order.id }} · {{ order.design_type }}</h2>
         <div class="d-flex gap-2">
             {% if order.is_urgent %}<span class="badge bg-danger">срочно</span>{% endif %}
-            <span class="badge bg-secondary">{{ order.deadline_status }}</span>
+            <span class="badge bg-secondary">{{ order.get_status_display }}</span>
+            <span class="badge bg-info">{{ order.deadline_status }}</span>
         </div>
     </div>
     <div class="card-body">
         <div class="row g-3">
             <div class="col-md-6">
                 <div class="text-muted small">Клиент</div>
-                <a href="{% url 'clients:detail' order.client.id %}" class="fw-semibold">
+                <a href="{{ order.client.get_absolute_url }}" class="fw-semibold">
                     {{ order.client.name }}
                 </a>
             </div>
@@ -24,17 +25,21 @@
                     {{ order.designer.name }}
                 </a>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="text-muted small">Стоимость</div>
                 <div class="fs-5 fw-semibold">{{ order.price }} ₽</div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="text-muted small">Дедлайн</div>
                 <div class="fw-semibold">{{ order.deadline }}</div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="text-muted small">Срочность</div>
                 <div class="fw-semibold">{{ order.is_urgent|yesno:"Да,Нет" }}</div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small">Дорогой заказ</div>
+                <div class="fw-semibold">{{ order.is_expensive|yesno:"Да,Нет" }}</div>
             </div>
         </div>
     </div>

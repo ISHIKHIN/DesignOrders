@@ -21,8 +21,8 @@ def client_list(request):
     })
 
 
-def client_detail(request, client_id):
-    client = get_object_or_404(Client, pk=client_id)
+def client_detail(request, slug):
+    client = get_object_or_404(Client, slug=slug)
     orders = client.orders.select_related('designer').all()
     return render(request, 'clients/client_detail.html', {
         'client': client,

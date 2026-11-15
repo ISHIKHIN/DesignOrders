@@ -10,6 +10,7 @@
         <div>
             <h1 class="h3 mb-1">{{ client.name }}</h1>
             <div class="text-muted">ID: {{ client.id }} · {{ client.phone|default:"телефон не указан" }}</div>
+            <div class="text-muted small">Slug: {{ client.slug }}</div>
         </div>
     </div>
 </div>

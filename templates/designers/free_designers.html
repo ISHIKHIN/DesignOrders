@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Свободные дизайнеры{% endblock %}
+{% block content %}
+
+<h1 class="mb-3">Свободные дизайнеры на {{ target_date }}</h1>
+
+<form method="get" class="card mb-4">
+    <div class="card-body row g-2 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label small text-muted">Дата</label>
+            <input type="date" name="date" value="{{ raw_date }}" class="form-control">
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary">Показать</button>
+        </div>
+    </div>
+</form>
+
+<ul class="list-group">
+    {% for d in designers %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{% url 'designers:detail' d.id %}">{{ d.name }}</a>
+            <span class="text-muted small">{{ d.specialization|default:"—" }}</span>
+        </li>
+    {% empty %}
+        <li class="list-group-item text-center text-muted">
+            На эту дату все дизайнеры заняты.
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
