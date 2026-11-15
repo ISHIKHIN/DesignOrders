@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Этап #{{ stage.id }}{% endblock %}
+{% block content %}
+
+<div class="card">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h2 class="h4 mb-0">Этап #{{ stage.id }} · {{ stage.name }}</h2>
+        <span class="badge bg-info">{{ stage.get_status_display }}</span>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="text-muted small">Заказ</div>
+                <a href="{% url 'orders:detail' stage.order.id %}" class="fw-semibold">
+                    #{{ stage.order.id }} · {{ stage.order.design_type }}
+                </a>
+            </div>
+            <div class="col-md-6">
+                <div class="text-muted small">Срок</div>
+                <div class="fw-semibold">{{ stage.deadline }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'stages:list' %}" class="btn btn-secondary">← К этапам</a>
+</div>
+
+{% endblock %}

@@ -1,16 +1,58 @@
 {% extends 'base.html' %}
 {% block title %}Заказ #{{ order.id }}{% endblock %}
 {% block content %}
-    <div class="card">
-        <div class="card-header"><h2>Заказ #{{ order.id }}</h2></div>
-        <div class="card-body">
-            <p><strong>Клиент:</strong> {{ order.client_name }}</p>
-            <p><strong>Дизайнер:</strong> {{ order.designer_name }}</p>
-            <p><strong>Тип дизайна:</strong> {{ order.design_type }}</p>
-            <p><strong>Стоимость:</strong> {{ order.price }} руб.</p>
-            <p><strong>Срочность:</strong> {{ order.is_urgent|yesno:"Да,Нет" }}</p>
-            <p><strong>Дедлайн:</strong> {{ order.deadline }}</p>
-            <a href="{% url 'orders:list' %}" class="btn btn-secondary mt-3">← Назад к списку</a>
+
+<div class="card mb-4">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h2 class="h4 mb-0">Заказ #{{ order.id }} · {{ order.design_type }}</h2>
+        <div class="d-flex gap-2">
+            {% if order.is_urgent %}<span class="badge bg-danger">срочно</span>{% endif %}
+            <span class="badge bg-secondary">{{ order.deadline_status }}</span>
         </div>
     </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="text-muted small">Клиент</div>
+                <a href="{% url 'clients:detail' order.client.id %}" class="fw-semibold">
+                    {{ order.client.name }}
+                </a>
+            </div>
+            <div class="col-md-6">
+                <div class="text-muted small">Дизайнер</div>
+                <a href="{% url 'designers:detail' order.designer.id %}" class="fw-semibold">
+                    {{ order.designer.name }}
+                </a>
+            </div>
+            <div class="col-md-4">
+                <div class="text-muted small">Стоимость</div>
+                <div class="fs-5 fw-semibold">{{ order.price }} ₽</div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-muted small">Дедлайн</div>
+                <div class="fw-semibold">{{ order.deadline }}</div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-muted small">Срочность</div>
+                <div class="fw-semibold">{{ order.is_urgent|yesno:"Да,Нет" }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4 class="mb-3">Этапы</h4>
+<ul class="timeline mb-4">
+    {% for stage in stages %}
+        <li>
+            <a href="{% url 'stages:detail' stage.id %}" class="fw-semibold">{{ stage.name }}</a>
+            <span class="badge bg-info ms-2">{{ stage.get_status_display }}</span>
+            <div class="text-muted small">до {{ stage.deadline }}</div>
+        </li>
+    {% empty %}
+        <li class="text-muted">Этапов пока нет.</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'orders:list' %}" class="btn btn-secondary">← Назад к списку</a>
+
 {% endblock %}

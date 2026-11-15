@@ -1,41 +1,56 @@
 {% extends 'base.html' %}
 {% block title %}Этапы{% endblock %}
 {% block content %}
-    <h1>Этапы {% if order %}для заказа #{{ order.id }}{% endif %}</h1>
-    <ul class="list-group mt-3">
-        {% for stage in stages %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    [{{ stage.id }}]
-                    <a href="{% url 'stages:detail' stage.id %}">
-                        {{ stage.name }}
-                    </a>
-                    — заказ
-                    <a href="{% url 'orders:detail' stage.order_id %}">
-                        #{{ stage.order_id }}
-                    </a>
-                    | Срок: {{ stage.deadline }}
-                </div>
-                <div>
-                    {% if stage.status == 'planned' %}
-                        <span class="badge bg-primary text-white">Запланирован</span>
-                    {% elif stage.status == 'in_progress' %}
-                        <span class="badge bg-warning text-dark">В работе</span>
-                    {% elif stage.status == 'done' %}
-                        <span class="badge bg-success text-white">Выполнен</span>
-                    {% else %}
-                        <span class="badge bg-info text-dark">{{ stage.status }}</span>
-                    {% endif %}
-                </div>
-            </li>
-        {% empty %}
-            <li class="list-group-item">Список этапов пуст.</li>
-        {% endfor %}
-    </ul>
 
-    {% if not order %}
-        <a href="{% url 'orders:list' %}" class="btn btn-secondary mt-3">← К заказам</a>
-    {% else %}
-        <a href="{% url 'orders:detail' order.id %}" class="btn btn-secondary mt-3">← К заказу</a>
-    {% endif %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="mb-0">Этапы {% if order %}для заказа #{{ order.id }}{% endif %}</h1>
+    <span class="badge bg-secondary">{{ stages|length }} всего</span>
+</div>
+
+<form method="get" class="card mb-4">
+    <div class="card-body row g-2 align-items-end">
+        <div class="col-md-5">
+            <label class="form-label small text-muted">Поиск</label>
+            <input type="text" name="q" value="{{ query }}" class="form-control"
+                   placeholder="по названию этапа">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small text-muted">Статус</label>
+            <select name="status" class="form-select">
+                <option value="">Все</option>
+                {% for value, label in statuses %}
+                    <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">Фильтр</button>
+        </div>
+    </div>
+</form>
+
+<ul class="list-group">
+    {% for stage in stages %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-muted small">#{{ stage.id }}</span>
+                <a href="{% url 'stages:detail' stage.id %}" class="fw-semibold">{{ stage.name }}</a>
+                <div class="text-muted small mt-1">
+                    заказ <a href="{% url 'orders:detail' stage.order.id %}">#{{ stage.order.id }}</a>
+                    · до {{ stage.deadline }}
+                </div>
+            </div>
+            <span class="badge bg-info">{{ stage.get_status_display }}</span>
+        </li>
+    {% empty %}
+        <li class="list-group-item text-center text-muted">Список этапов пуст.</li>
+    {% endfor %}
+</ul>
+
+<div class="mt-4">
+    <a href="{% url 'orders:list' %}" class="btn btn-secondary">← К заказам</a>
+</div>
+
 {% endblock %}

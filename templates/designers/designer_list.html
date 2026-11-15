@@ -1,14 +1,40 @@
 {% extends 'base.html' %}
 {% block title %}Дизайнеры{% endblock %}
 {% block content %}
-    <h1>Дизайнеры</h1>
-    <ul class="list-group mt-3">
-        {% for designer in designers %}
-            <li class="list-group-item">
-                <a href="{% url 'designers:detail' designer.id %}">{{ designer.name }}</a> ({{ designer.specialization }})
-            </li>
-        {% empty %}
-            <li class="list-group-item">Список дизайнеров пуст.</li>
-        {% endfor %}
-    </ul>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="mb-0">Дизайнеры</h1>
+    <span class="badge bg-secondary">{{ designers|length }} всего</span>
+</div>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-6 col-lg-4">
+        <input type="text" name="q" value="{{ query }}" class="form-control"
+               placeholder="Поиск по имени или специализации">
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary">Найти</button>
+    </div>
+</form>
+
+<ul class="list-group">
+    {% for designer in designers %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <span class="avatar">{{ designer.name|first|upper }}</span>
+                <div>
+                    <a href="{% url 'designers:detail' designer.id %}">{{ designer.name }}</a>
+                    <div class="text-muted small">{{ designer.specialization|default:"—" }}</div>
+                </div>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-primary">заказов: {{ designer.orders_count }}</span>
+                <div class="text-muted small mt-1">{{ designer.total_price|default:0 }} ₽</div>
+            </div>
+        </li>
+    {% empty %}
+        <li class="list-group-item text-center text-muted">Список дизайнеров пуст.</li>
+    {% endfor %}
+</ul>
+
 {% endblock %}

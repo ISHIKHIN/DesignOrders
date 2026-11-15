@@ -1,24 +1,142 @@
 {% extends 'base.html' %}
 {% block title %}Заказы{% endblock %}
 {% block content %}
-    <h1>Заказы</h1>
-    <ul class="list-group mt-3">
-        {% for order in orders %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="mb-0">Заказы</h1>
+    <div class="d-flex flex-wrap gap-2">
+        <span class="badge bg-secondary">Всего: {{ stats.count|default:0 }}</span>
+        <span class="badge bg-success">Сумма: {{ stats.total|default:0 }} ₽</span>
+        <span class="badge bg-info">Средняя: {{ stats.avg|default:0|floatformat:2 }} ₽</span>
+    </div>
+</div>
+
+<form method="get" class="card mb-4">
+    <div class="card-body">
+        <div class="row g-2 align-items-end">
+
+            <div class="col-12 col-lg-4">
+                <label class="form-label small text-muted">Поиск</label>
+                <input type="text" name="q" value="{{ query }}" class="form-control"
+                       placeholder="тип / клиент / дизайнер">
+            </div>
+
+            <div class="col-6 col-lg-2">
+                <label class="form-label small text-muted">Клиент</label>
+                <select name="client" class="form-select">
+                    <option value="">Все</option>
+                    {% for c in clients %}
+                        <option value="{{ c.id }}"
+                            {% if request.GET.client == c.id|stringformat:'s' %}selected{% endif %}>
+                            {{ c.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-6 col-lg-2">
+                <label class="form-label small text-muted">Дизайнер</label>
+                <select name="designer" class="form-select">
+                    <option value="">Все</option>
+                    {% for d in designers %}
+                        <option value="{{ d.id }}"
+                            {% if request.GET.designer == d.id|stringformat:'s' %}selected{% endif %}>
+                            {{ d.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-6 col-lg-2">
+                <label class="form-label small text-muted">Срочность</label>
+                <select name="urgent" class="form-select">
+                    <option value="">Все</option>
+                    <option value="1" {% if request.GET.urgent == '1' %}selected{% endif %}>Только срочные</option>
+                    <option value="0" {% if request.GET.urgent == '0' %}selected{% endif %}>Только обычные</option>
+                </select>
+            </div>
+
+            <div class="col-3 col-lg-1">
+                <label class="form-label small text-muted">Цена от</label>
+                <input type="number" step="0.01" name="min_price"
+                       value="{{ request.GET.min_price }}" class="form-control" placeholder="0">
+            </div>
+
+            <div class="col-3 col-lg-1">
+                <label class="form-label small text-muted">Цена до</label>
+                <input type="number" step="0.01" name="max_price"
+                       value="{{ request.GET.max_price }}" class="form-control" placeholder="∞">
+            </div>
+
+        </div>
+
+        <div class="row g-2 align-items-end mt-1">
+
+            <div class="col-12 col-lg-4">
+                <label class="form-label small text-muted">Сортировка</label>
+                <select name="sort" class="form-select">
+                    {% for key, config in sort_fields %}
+                        <option value="{{ key }}" {% if current_sort == key %}selected{% endif %}>
+                            {{ config.label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-6 col-lg-2">
+                <button type="submit" class="btn btn-primary w-100">Применить</button>
+            </div>
+
+            <div class="col-6 col-lg-2">
+                <a href="{% url 'orders:list' %}" class="btn btn-secondary w-100">Сбросить</a>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+<ul class="list-group">
+    {% for order in orders %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
                 <a href="{% url 'orders:detail' order.id %}">
-                    #{{ order.id }} {{ order.design_type }}
+                    #{{ order.id }} · {{ order.design_type }}
                 </a>
-                <span>
-                    {{ order.deadline }} |
-                    {% if order.is_urgent %}
-                        <span class="badge bg-danger">Срочно</span>
-                    {% else %}
-                        <span class="badge bg-success">Не срочно</span>
-                    {% endif %}
-                </span>
+                {% if order.is_urgent %}
+                    <span class="badge bg-danger ms-2">срочно</span>
+                {% endif %}
+                <div class="text-muted small mt-1">
+                    {{ order.client.name }} → {{ order.designer.name }}
+                </div>
+            </div>
+            <div class="text-end">
+                <div class="fw-semibold">{{ order.price }} ₽</div>
+                <div class="text-muted small">до {{ order.deadline }}</div>
+            </div>
+        </li>
+    {% empty %}
+        <li class="list-group-item text-center text-muted">Заказов не найдено.</li>
+    {% endfor %}
+</ul>
+
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?{{ querystring }}&page={{ page_obj.previous_page_number }}">←</a>
             </li>
-        {% empty %}
-            <li class="list-group-item">Список заказов пуст.</li>
-        {% endfor %}
+        {% endif %}
+        <li class="page-item disabled">
+            <span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        </li>
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?{{ querystring }}&page={{ page_obj.next_page_number }}">→</a>
+            </li>
+        {% endif %}
     </ul>
+</nav>
+{% endif %}
+
 {% endblock %}

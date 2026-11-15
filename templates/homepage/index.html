@@ -1,22 +1,69 @@
 {% extends 'base.html' %}
-{% block title %}Главная - DesignOrders{% endblock %}
+{% block title %}Главная — DesignOrders{% endblock %}
 {% block content %}
-    <div class="p-5 mb-4 bg-white rounded-4 shadow-sm border">
-        <div class="container-fluid py-4">
-            <h1 class="display-5 fw-bold text-dark mb-3">DesignOrders</h1>
-            <p class="col-md-8 fs-5 text-muted mb-4">
-                Система учёта заказов на дизайн. Управление клиентами, дизайнерами и отслеживание этапов работ.
-            </p>
-            <div class="d-grid gap-3 d-md-flex justify-content-md-start">
-                <a href="{% url 'orders:list' %}" class="btn btn-primary btn-lg px-4 shadow-sm">
-                    Перейти к заказам
-                </a>
-                <a href="{% url 'clients:list' %}" class="btn btn-outline-secondary btn-lg px-4">
-                    Список клиентов
-                </a>
-            </div>
+
+<section class="hero-lite mb-4">
+    <h1>DesignOrders</h1>
+    <p>Система учёта заказов на дизайн</p>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{% url 'orders:list' %}" class="btn btn-primary btn-lite">Перейти к заказам</a>
+        <a href="{% url 'clients:list' %}" class="btn btn-secondary btn-lite">Клиенты</a>
+    </div>
+</section>
+
+<section class="row g-3 mb-5">
+    <div class="col-6 col-lg-3">
+        <div class="stat-card accent-purple">
+            <div class="label">Заказов</div>
+            <div class="value">{{ orders_count }}</div>
         </div>
     </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card accent-danger">
+            <div class="label">Срочных</div>
+            <div class="value">{{ urgent_count }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card accent-success">
+            <div class="label">Клиентов</div>
+            <div class="value">{{ clients_count }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card accent-info">
+            <div class="label">Дизайнеров</div>
+            <div class="value">{{ designers_count }}</div>
+        </div>
+    </div>
+</section>
 
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">Последние заказы</h4>
+        <a href="{% url 'orders:list' %}" class="btn btn-sm btn-outline-secondary">Все заказы</a>
+    </div>
+
+    <ul class="list-group">
+        {% for order in recent_orders %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <a href="{% url 'orders:detail' order.id %}">
+                        #{{ order.id }} · {{ order.design_type }}
+                    </a>
+                    <div class="text-muted small mt-1">
+                        {{ order.client.name }} → {{ order.designer.name }}
+                    </div>
+                </div>
+                <div class="text-end">
+                    <div class="fw-semibold">{{ order.price }} ₽</div>
+                    <div class="text-muted small">до {{ order.deadline }}</div>
+                </div>
+            </li>
+        {% empty %}
+            <li class="list-group-item text-center text-muted">Заказов пока нет.</li>
+        {% endfor %}
+    </ul>
+</section>
 
 {% endblock %}

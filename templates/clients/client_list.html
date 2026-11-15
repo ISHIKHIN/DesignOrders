@@ -1,15 +1,37 @@
 {% extends 'base.html' %}
 {% block title %}Клиенты{% endblock %}
 {% block content %}
-    <h1>Клиенты</h1>
-    <p>Всего клиентов: {{ clients|length }}</p>
-    <ul class="list-group mt-3">
-        {% for client in clients %}
-            <li class="list-group-item">
-                <a href="{% url 'clients:detail' client.id %}">{{ client.name }}</a> — {{ client.phone }}
-            </li>
-        {% empty %}
-            <li class="list-group-item">Список клиентов пуст.</li>
-        {% endfor %}
-    </ul>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="mb-0">Клиенты</h1>
+    <span class="badge bg-secondary">{{ clients|length }} всего</span>
+</div>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-6 col-lg-4">
+        <input type="text" name="q" value="{{ query }}" class="form-control"
+               placeholder="Поиск по имени или телефону">
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary">Найти</button>
+    </div>
+</form>
+
+<ul class="list-group">
+    {% for client in clients %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <span class="avatar">{{ client.name|first|upper }}</span>
+                <div>
+                    <a href="{% url 'clients:detail' client.id %}">{{ client.name }}</a>
+                    <div class="text-muted small">{{ client.phone|default:"— телефон не указан" }}</div>
+                </div>
+            </div>
+            <span class="badge bg-primary">заказов: {{ client.orders_count }}</span>
+        </li>
+    {% empty %}
+        <li class="list-group-item text-center text-muted">Список клиентов пуст.</li>
+    {% endfor %}
+</ul>
+
 {% endblock %}

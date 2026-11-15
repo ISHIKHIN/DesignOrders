@@ -1,20 +1,48 @@
 {% extends 'base.html' %}
 {% block title %}Статистика{% endblock %}
 {% block content %}
-    <h1>Статистика заказов</h1>
-    <p>Всего заказов: <strong>{{ total_count }}</strong></p>
-    <p>Срочных заказов: <strong>{{ urgent_count }}</strong></p>
-    <h2 class="mt-4">По дизайнерам</h2>
-    <table class="table table-striped">
-        <thead><tr><th>Дизайнер</th><th>Заказов</th><th>Сумма, руб.</th></tr></thead>
-        <tbody>
-            {% for row in by_designer %}
+
+<h1 class="mb-4">Статистика</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="stat-card">
+            <div class="label">Всего заказов</div>
+            <div class="value">{{ total_count }}</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="stat-card">
+            <div class="label">Срочных</div>
+            <div class="value">{{ urgent_count }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">По дизайнерам</div>
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
                 <tr>
-                    <td>{{ row.designer_name }}</td>
-                    <td>{{ row.orders_count }}</td>
-                    <td>{{ row.total_price|default:"0" }}</td>
+                    <th>Дизайнер</th>
+                    <th class="text-end">Заказов</th>
+                    <th class="text-end">Сумма</th>
                 </tr>
+            </thead>
+            <tbody>
+            {% for d in by_designer %}
+                <tr>
+                    <td class="fw-semibold">{{ d.name }}</td>
+                    <td class="text-end">{{ d.orders_count }}</td>
+                    <td class="text-end">{{ d.total_price|default:0 }} ₽</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="3" class="text-center text-muted">Нет данных.</td></tr>
             {% endfor %}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 {% endblock %}
